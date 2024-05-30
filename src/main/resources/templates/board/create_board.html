@@ -173,7 +173,6 @@
         var selectElement = document.getElementById("category");
         var datetimeLocalValue = document.getElementById("voteEnd").value;
         var isoDateTime = new Date(datetimeLocalValue).toISOString();
-        // console.log("이거 뭘까 ? : " + document.getElementById("voteFlagHidden").value);
         console.log(updatedHtmlString);
         // 게시판 생성 데이터 준비
         var boardData = {
@@ -193,7 +192,6 @@
             data: JSON.stringify(boardData),
             success: function(boardId) {
                 console.log("게시판 생성 완료, ID: " + boardId);
-                // console.log(boardData.voteFlag);
                 if (boardData.voteFlag === 'true') {
                     console.log('여기 맞아?');
                     sendVoteItemsToServer(boardId);
@@ -239,12 +237,6 @@
         });
     }
 
-    // document.getElementById("getContentsButton").addEventListener("click", function() {
-    //     var voteFlagValue = document.getElementById("voteFlagHidden").value;
-    //     if (voteFlagValue === 'true') {
-    //         sendVoteItemsToServer();
-    //     }
-    // });
     // 버튼 클릭 이벤트 리스너
     document.getElementById("getContentsButton").addEventListener("click", function(event) {
         event.preventDefault();
@@ -255,39 +247,6 @@
             sendBoardAndVotes();
         }
     });
-
-    // function sendVoteItemsToServer() {
-    //     var formData = new FormData();
-    //     var voteItems = document.querySelectorAll(".poll-item");
-    //
-    //     voteItems.forEach(function(item) {
-    //         var imageInput = item.querySelector(".poll-image");
-    //         var textInput = item.querySelector(".poll-text");
-    //
-    //         if (imageInput.files[0]) {
-    //             formData.append('images', imageInput.files[0]);
-    //         }
-    //         formData.append('texts', textInput.value);
-    //     });
-    //
-    //     $.ajax({
-    //         type: 'POST',
-    //         url: '/board/saveVoteItems',
-    //         data: formData,
-    //         processData: false,
-    //         contentType: false,
-    //         success: function(response) {
-    //             console.log("투표 항목을 서버에 전송했습니다.");
-    //         },
-    //         error: function(xhr, status, error) {
-    //             console.error("투표 항목을 서버에 전송하는 중 오류가 발생했습니다.");
-    //         }
-    //     });
-    // }
-
-    // document.getElementById("voteFlag").addEventListener("click", function(event) {
-    //     document.getElementById("voteForm").style.display = "block";
-    // });
 </script>
 </body>
 </html>

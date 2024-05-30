@@ -39,16 +39,7 @@ public class SecurityConfig {
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("*").permitAll()
-//                                .requestMatchers("/").permitAll()
-//                                .requestMatchers("/user/signup").permitAll()
-//                                .requestMatchers("/user/login").permitAll()
-//                                .requestMatchers("/css/**").permitAll() // 정적 리소스에 대한 접근 허용
-//                                .requestMatchers("/img/**").permitAll()
-//                                .requestMatchers("/layout/**").permitAll()
-//                                .anyRequest().authenticated()
                 )
-//                .csrf((csrf) -> csrf
-//                        .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
                 .headers((headers) -> headers
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(
                                 XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
@@ -71,10 +62,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-//    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-//        return authenticationConfiguration.getAuthenticationManager();
-//    }
     @Bean
     AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();

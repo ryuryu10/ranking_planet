@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MainController {
     private final UserService userService;
     private final BoardService boardService;
-//    private final MainService mainService;
 
     private final HttpSession httpSession;
 
@@ -44,7 +43,6 @@ public class MainController {
      **/
     @RequestMapping(value = "/home.do")
     public String home(Authentication authentication, Model model, HttpServletResponse response, HttpServletRequest request) {
-        System.out.println("성공은 했니?>");
         /*Default Setting*/
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal(); // 유저정보
@@ -58,21 +56,6 @@ public class MainController {
 
         return "main/home";
     }
-
-//    @GetMapping(value = "orderList.do")
-//    public String tableOrderList(Authentication authentication, Model model, HttpServletResponse response, HttpServletRequest request){
-//        /*Default Setting*/
-//        UserDetails userDetails = (UserDetails) authentication.getPrincipal(); //유저정보
-//        long sessionTimeoutInSeconds = httpSession.getMaxInactiveInterval(); //세션시간
-//
-//
-//        model.addAttribute("member", userDetails.getUsername());
-//        model.addAttribute("sessionTimeoutInSeconds", sessionTimeoutInSeconds);
-//        /*Default Setting*/
-//
-//
-//        return "setting/table_order_list";
-//    }
 
     public HashMap<String,Object> formatMapRequest(HttpServletRequest request) {
         HashMap<String, Object> map = new HashMap<String, Object>();

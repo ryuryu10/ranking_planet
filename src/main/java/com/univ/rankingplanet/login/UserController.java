@@ -23,12 +23,6 @@ public class UserController {
         return "login_form";
     }
 
-//    @GetMapping("/signup")
-//    public String signup(Model model) {
-//        model.addAttribute("userCreateForm", new UserCreateForm());
-//        return "signup_form";
-//    }
-
     @GetMapping("/signup")
     public String index(Model model) {
         model.addAttribute("userCreateForm", new UserCreateForm());
@@ -37,8 +31,6 @@ public class UserController {
 
     @PostMapping("/signup")
     public String signup(@Valid UserCreateForm userCreateForm, BindingResult bindingResult) {
-        System.out.println("들어오긴 하냐?");
-        System.out.println(userCreateForm.getUsername());
         if (bindingResult.hasErrors()) {
             return "signup_form";
         }
@@ -61,8 +53,6 @@ public class UserController {
             bindingResult.reject("signupFailed", e.getMessage());
             return "signup_form";
         }
-
-//        userService.create(userCreateForm.getUsername(), userCreateForm.getEmail(), userCreateForm.getPassword1());
 
         return "redirect:/";
     }

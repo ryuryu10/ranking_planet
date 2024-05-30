@@ -52,7 +52,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Controller
-//@RequestMapping("/board")
 public class BoardController {
     private final BoardService boardService;
     private final VoteService voteService;
@@ -80,20 +79,18 @@ public class BoardController {
                 board = optionalBoard.get();
                 model.addAttribute("board", board);
             } else {
-                System.out.println("없다는데");
+                System.out.println("존재하지 않는 게시판");
             }
         } else {
-            System.out.println("없다는데");
+            System.out.println("존재하지 않는 게시판");
         }
         List<Vote> voteList = voteService.getAllVotes(id); // Vote 엔티티 리스트 가져오기
         model.addAttribute("voteList", voteList); // 모델에 엔티티 리스트 추가
 
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal(); // 유저정보
-            long sessionTimeoutInSeconds = httpSession.getMaxInactiveInterval(); // 세션시간
 
             model.addAttribute("member", userDetails.getUsername());
-//            model.addAttribute("sessionTimeoutInSeconds", sessionTimeoutInSeconds);
             List<VoteRecord> voteNumbersByUserIdAndBoardId = voteRecordRepository.findVoteNumbersByUserIdAndBoardId(
                     userDetails.getUsername(), board.getId());
             if(voteNumbersByUserIdAndBoardId.size() != 0){
@@ -116,10 +113,10 @@ public class BoardController {
                 board = optionalBoard.get();
                 model.addAttribute("board", board);
             } else {
-                System.out.println("없다는데");
+                System.out.println("존재하지 않는 게시판입니다.");
             }
         } else {
-            System.out.println("없다는데");
+            System.out.println("존재하지 않는 게시판입니다.");
         }
         List<Vote> voteList = voteService.getAllVotes(boardId); // Vote 엔티티 리스트 가져오기
         model.addAttribute("voteList", voteList); // 모델에 엔티티 리스트 추가
@@ -131,10 +128,8 @@ public class BoardController {
 
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal(); // 유저정보
-            long sessionTimeoutInSeconds = httpSession.getMaxInactiveInterval(); // 세션시간
 
             model.addAttribute("member", userDetails.getUsername());
-//            model.addAttribute("sessionTimeoutInSeconds", sessionTimeoutInSeconds);
             List<VoteRecord> voteNumbersByUserIdAndBoardId = voteRecordRepository.findVoteNumbersByUserIdAndBoardId(
                     userDetails.getUsername(), board.getId());
             if(voteNumbersByUserIdAndBoardId.size() != 0){
@@ -147,14 +142,10 @@ public class BoardController {
 
     @PostMapping("/board/update/{boardId}")
     public ResponseEntity<Long> updateBoard(@Valid @RequestBody BoardCreateForm boardCreateForm, @PathVariable Long boardId ,BindingResult bindingResult,Authentication authentication){
-        System.out.println("업데이트 컨트롤러 타는지~?");
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(null);
         }
-//        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal(); // 유저정보
-//        }
-//        System.out.println("마감 날짜: " + LocalDateTime.parse(boardCreateForm.getVoteEnd(), DateTimeFormatter.ISO_DATE_TIME));
         Board board = boardService.updateBoard(boardId, boardCreateForm.getBoardTitle(), boardCreateForm.getBoardContent(), boardCreateForm.getVoteFlag(), boardCreateForm.getCategory(), userDetails.getUsername()
                 , boardCreateForm.getVoteEnd(), boardCreateForm.getVoteTitle());
 
@@ -163,7 +154,6 @@ public class BoardController {
 
     @GetMapping(value = "/board/list/{category}")
     public String boardList(@PathVariable String category, Model model){
-        System.out.println("dml?");
         List<Board> boardList = boardService.getBoardListByCategory(category);
         model.addAttribute("boardList",boardList);
         return "board/category_board_list";
@@ -180,10 +170,7 @@ public class BoardController {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(null);
         }
-//        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal(); // 유저정보
-//        }
-//        System.out.println("마감 날짜: " + LocalDateTime.parse(boardCreateForm.getVoteEnd(), DateTimeFormatter.ISO_DATE_TIME));
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal(); // 유저정보
         Board board = boardService.createBoard(boardCreateForm.getBoardTitle(), boardCreateForm.getBoardContent(), boardCreateForm.getVoteFlag(), boardCreateForm.getCategory(), userDetails.getUsername()
                 , boardCreateForm.getVoteEnd(), boardCreateForm.getVoteTitle());
         return ResponseEntity.ok(board.getId()); // 생성된 게시판 ID를 응답으로 반환
@@ -197,7 +184,6 @@ public class BoardController {
             userDetails = (UserDetails) authentication.getPrincipal();
         }
 
-        System.out.println("컨트롤러 타냐?");
         boolean success = boardService.likeBoard(id, userDetails.getUsername());
         if (success) {
             return ResponseEntity.ok().body("좋아요를 누르셨습니다.");
@@ -211,9 +197,6 @@ public class BoardController {
             @RequestParam("boardId") Long boardId,
             @RequestParam("texts") List<String> texts,
             @RequestParam("images") List<MultipartFile> uploadFile) {
-        System.out.println("Board ID: " + boardId);
-        System.out.println("Texts: " + texts);
-        System.out.println("Images size: " + uploadFile.size());
 
         // 이미지 및 텍스트 처리 로직 구현
         for (int i = 0; i < texts.size(); i++) {
@@ -370,10 +353,6 @@ public class BoardController {
     public ResponseEntity<byte[]> showImageGET(
             @RequestParam("fileName") String fileName
     ) {
-//        log.info("Controller showImageGET");
-
-        System.out.println("fileName : " + fileName);
-
         File file = new File(fileName);
 
         ResponseEntity<byte[]> result = null;

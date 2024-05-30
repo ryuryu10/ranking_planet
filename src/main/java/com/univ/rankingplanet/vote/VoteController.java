@@ -24,9 +24,6 @@ public class VoteController {
 
     @PostMapping("/api/vote")
     public String vote(@RequestParam int voteNumber,  @RequestParam Long boardId, @RequestParam String userId) {
-        System.out.println("항목번호: " + voteNumber);
-        System.out.println("게시판번호: " + boardId);
-        System.out.println("이름: " + userId);
         VoteRecord previousVoteRecord = voteRecordRepository.findByBoardIdAndUserId(boardId, userId);
         if(previousVoteRecord != null){
             Vote previousVote = voteRepository.findByBoardIdAndVoteNumber(boardId, previousVoteRecord.getVoteNumber());

@@ -15,19 +15,6 @@ import lombok.Setter;
 @Table(name = "user_info")
 public class SiteUser {
 
-//    @Id
-//    @Column(name = "user_id") // 중복처리
-//    private String userId;
-//
-//    @Column(name = "name")
-//    private String name;
-//
-//    @Column(name = "password")
-//    private String passWord;
-//
-////    @Column(name = "phone_num")
-////    private String phoneNum;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

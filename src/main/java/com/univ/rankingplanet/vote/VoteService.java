@@ -25,8 +25,6 @@ public class VoteService {
 
     public void vote(int voteNumber, Long boardId, String userId) {
         Vote vote = voteRepository.findByBoardIdAndVoteNumber(boardId, voteNumber);
-//        if (vote != null) {
-            // 특정 사용자가 해당 투표에 이미 투표했는지 확인
         boolean hasVoted = voteRecordRepository.existsByBoardIdAndVoteNumberAndUserId(boardId, voteNumber, userId);
         System.out.println(hasVoted);
             if (!hasVoted) {

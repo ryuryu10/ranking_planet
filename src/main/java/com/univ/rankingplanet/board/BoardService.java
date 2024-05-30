@@ -54,11 +54,9 @@ public class BoardService {
     @Transactional
     public boolean likeBoard(Long id, String userId) {
         Optional<Board> optionalBoard = boardRepository.findById(id);
-        System.out.println("서비스 타냐");
         if (optionalBoard.isPresent()) {
             Board board = optionalBoard.get();
             if (!likeRecordService.isLikedByUser(userId, id)) { // 이미 좋아요를 누른 경우에는 처리하지 않음
-                System.out.println("탄건가");
                 board.setLikeCount(board.getLikeCount() + 1);
                 boardRepository.save(board);
                 LikeRecord likeRecord = new LikeRecord();
