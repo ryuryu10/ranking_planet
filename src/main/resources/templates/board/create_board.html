@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+    <style>
+        #voteForm {
+            display: none; /* 기본적으로 숨김 */
+        }
+        .poll-item {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<form th:action="@{/board/create}" th:object="${boardCreateForm}" method="post">
+    <label for="boardTitle">게시판 제목:</label>
+    <div>
+        <label for="category">Category:</label>
+        <select id="category" name="category">
+            <option th:each="category : ${T(com.univ.rankingplanet.board.BoardCategory).values()}"
+                    th:value="${category.displayName}"
+                    th:text="${category.displayName}"></option>
+        </select>
+    </div>
+    <input type="text" id="boardTitle" th:field="*{boardTitle}" placeholder="투표 제목을 입력하세요">
+    <div id="editor"></div>
+    <input type="hidden" id="quill_html" name="content" th:field="*{boardContent}">
+    <input type="checkbox" id="voteFlag" th:field="*{voteFlag}">
+    <label for="voteFlag">투표 추가하기</label>
+    <input type="hidden" id="voteFlagHidden" name="voteFlagHidden" th:field="*{voteFlag}">
+
+    <!-- 투표 생성 양식 -->
+    <div id="voteForm">
+        <label for="voteTitle">투표 제목:</label>
+        <input type="text" id="voteTitle" placeholder="투표 제목을 입력하세요">
+        <div>
+            <label for="voteEnd">투표 마감 날짜 (yyyy-MM-ddTHH:mm:ss):</label>
+            <input type="datetime-local" id="voteEnd" name="voteEnd" required/>
+        </div>
+            <div id="voteItems">
+            <!-- 투표 항목을 동적으로 추가할 공간 -->
+        </div>
+        <button type="button" onclick="addVoteItem()">항목 추가</button>
+    </div>
+
+    <button type="button" id="getContentsButton">게시글 등록하기</button>
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script>
+    function quilljsediterInit() {
+        var option = {
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+                    ['link', 'image', 'video', 'formula'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'align': [] }],
+                    ['clean']
+                ]
+            },
+            placeholder: '자세한 내용을 입력해 주세요!',
+            theme: 'snow'
+        };
+
+        quill = new Quill('#editor', option);
+        quill.on('text-change', function() {
+            document.getElementById("quill_html").value = quill.root.innerHTML;
+        });
+
+        quill.getModule('toolbar').addHandler('image', function () {
+            selectLocalImage();
+        });
+        quill.setText('');
+    }
+
+    function selectLocalImage() {
+        const fileInput = document.createElement('input');
+        fileInput.setAttribute('type', 'file');
+
+        fileInput.click();
+
+        fileInput.addEventListener("change", function () {
+            const formData = new FormData();
+            const file = fileInput.files[0];
+            formData.append('uploadFile', file);
+
+            $.ajax({
+                type: 'post',
+                enctype: 'multipart/form-data',
+                url: '/uploadTest',
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function (data) {
+                    const range = quill.getSelection();
+                    data.uploadPath = data.uploadPath.replace(/\\/g, '/');
+                    quill.insertEmbed(range.index, 'image', "/board/display?fileName=" + data.uploadPath + "/" + data.fileName);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        });
+    }
+
+    quilljsediterInit();
+
+    function addVoteItem() {
+        var voteItems = document.getElementById("voteItems");
+
+        var itemDiv = document.createElement("div");
+        itemDiv.classList.add("poll-item");
+
+        var imageInput = document.createElement("input");
+        imageInput.type = "file";
+        imageInput.accept = "image/*";
+        imageInput.classList.add("poll-image");
+        itemDiv.appendChild(imageInput);
+
+        var textInput = document.createElement("input");
+        textInput.type = "text";
+        textInput.placeholder = "투표 항목을 입력하세요";
+        textInput.classList.add("poll-text");
+        itemDiv.appendChild(textInput);
+
+        var deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.textContent = "삭제";
+        deleteButton.onclick = function() {
+            voteItems.removeChild(itemDiv);
+        };
+        itemDiv.appendChild(deleteButton);
+
+        voteItems.appendChild(itemDiv);
+    }
+
+
+    document.getElementById("voteFlag").addEventListener("change", function() {
+        var voteFlagHidden = document.getElementById("voteFlagHidden");
+        voteFlagHidden.value = this.checked;
+        if(voteFlagHidden.value === 'true'){
+            document.getElementById("voteForm").style.display = "block";
+        }else{
+            document.getElementById("voteForm").style.display = "none";
+        }
+    });
+
+    function sendBoardAndVotes() {
+        // 임시 DOM 요소를 만들어 HTML 문자열을 파싱합니다.
+        var tempDiv = document.createElement('div');
+        tempDiv.innerHTML = quill.root.innerHTML;
+
+// 모든 img 태그를 선택합니다.
+        var images = tempDiv.getElementsByTagName('img');
+
+// 각 img 태그에 스타일 속성을 추가합니다.
+        for (var i = 0; i < images.length; i++) {
+            images[i].style.width = '300px';
+            images[i].style.height = '300px';
+        }
+
+// 수정된 HTML 문자열을 반환합니다.
+        var updatedHtmlString = tempDiv.innerHTML;
+        var selectElement = document.getElementById("category");
+        var datetimeLocalValue = document.getElementById("voteEnd").value;
+        var isoDateTime = new Date(datetimeLocalValue).toISOString();
+        // console.log("이거 뭘까 ? : " + document.getElementById("voteFlagHidden").value);
+        console.log(updatedHtmlString);
+        // 게시판 생성 데이터 준비
+        var boardData = {
+            boardTitle: document.getElementById("boardTitle").value,
+            boardContent: updatedHtmlString,
+            voteFlag: document.getElementById("voteFlagHidden").value,
+            category: selectElement.options[selectElement.selectedIndex].value,
+            voteEnd: isoDateTime,
+            voteTitle: document.getElementById("voteTitle").value
+        };
+
+        // 게시판 생성 요청
+        $.ajax({
+            type: 'post',
+            url: '/board/create',
+            contentType: 'application/json',
+            data: JSON.stringify(boardData),
+            success: function(boardId) {
+                console.log("게시판 생성 완료, ID: " + boardId);
+                // console.log(boardData.voteFlag);
+                if (boardData.voteFlag === 'true') {
+                    console.log('여기 맞아?');
+                    sendVoteItemsToServer(boardId);
+                } else {
+                    window.location.href = '/board/detail/' + boardId;
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("게시판 생성 중 오류가 발생했습니다.");
+            }
+        });
+    }
+
+    function sendVoteItemsToServer(boardId) {
+        var formData = new FormData();
+        var voteItems = document.querySelectorAll(".poll-item");
+
+        voteItems.forEach(function(item) {
+            var imageInput = item.querySelector(".poll-image");
+            var textInput = item.querySelector(".poll-text");
+
+            if (imageInput.files[0]) {
+                formData.append('images', imageInput.files[0]);
+            }
+            formData.append('texts', textInput.value);
+        });
+
+        formData.append('boardId', boardId); // 게시판 ID 추가
+        console.log(document.getElementById("voteEnd").value);
+        $.ajax({
+            type: 'POST',
+            url: '/board/saveVoteItems',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                console.log("투표 항목을 서버에 전송했습니다.");
+                window.location.href = '/board/detail/' + boardId;
+            },
+            error: function(xhr, status, error) {
+                console.error("투표 항목을 서버에 전송하는 중 오류가 발생했습니다.", xhr.responseText);
+            }
+        });
+    }
+
+    // document.getElementById("getContentsButton").addEventListener("click", function() {
+    //     var voteFlagValue = document.getElementById("voteFlagHidden").value;
+    //     if (voteFlagValue === 'true') {
+    //         sendVoteItemsToServer();
+    //     }
+    // });
+    // 버튼 클릭 이벤트 리스너
+    document.getElementById("getContentsButton").addEventListener("click", function(event) {
+        event.preventDefault();
+        var voteFlagValue = document.getElementById("voteFlagHidden").value;
+        if (voteFlagValue === 'true') {
+            sendBoardAndVotes();
+        } else {
+            sendBoardAndVotes();
+        }
+    });
+
+    // function sendVoteItemsToServer() {
+    //     var formData = new FormData();
+    //     var voteItems = document.querySelectorAll(".poll-item");
+    //
+    //     voteItems.forEach(function(item) {
+    //         var imageInput = item.querySelector(".poll-image");
+    //         var textInput = item.querySelector(".poll-text");
+    //
+    //         if (imageInput.files[0]) {
+    //             formData.append('images', imageInput.files[0]);
+    //         }
+    //         formData.append('texts', textInput.value);
+    //     });
+    //
+    //     $.ajax({
+    //         type: 'POST',
+    //         url: '/board/saveVoteItems',
+    //         data: formData,
+    //         processData: false,
+    //         contentType: false,
+    //         success: function(response) {
+    //             console.log("투표 항목을 서버에 전송했습니다.");
+    //         },
+    //         error: function(xhr, status, error) {
+    //             console.error("투표 항목을 서버에 전송하는 중 오류가 발생했습니다.");
+    //         }
+    //     });
+    // }
+
+    // document.getElementById("voteFlag").addEventListener("click", function(event) {
+    //     document.getElementById("voteForm").style.display = "block";
+    // });
+</script>
+</body>
+</html>

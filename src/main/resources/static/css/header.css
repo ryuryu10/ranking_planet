@@ -1,0 +1,104 @@
+/*nav {*/
+/*    background-color: #FF6600; !* 배경색 *!*/
+/*    color: #fff; !* 텍스트 색상 *!*/
+/*    padding: 10px 20px; !* 패딩 *!*/
+/*    display: flex; !* Flexbox 사용 *!*/
+/*    justify-content: space-between; !* 좌우 정렬 *!*/
+/*    align-items: center; !* 세로 중앙 정렬 *!*/
+/*    width: 100%; !* 화면 가로폭에 맞춤 *!*/
+/*    box-sizing: border-box; !* 패딩 포함하여 크기 계산 *!*/
+/*    white-space: nowrap; !* 텍스트 줄바꿈 방지 *!*/
+/*    overflow: hidden; !* 넘치는 내용 숨기기 *!*/
+/*}*/
+
+/*!* 로그인/로그아웃 버튼 스타일 *!*/
+/*.login-btn {*/
+/*    border: none; !* 테두리 없음 *!*/
+/*    color: white; !* 텍스트 색상 *!*/
+/*    padding: 10px 20px; !* 패딩 *!*/
+/*    text-align: center; !* 텍스트 가운데 정렬 *!*/
+/*    text-decoration: none; !* 밑줄 없음 *!*/
+/*    display: inline-block; !* 인라인 블록 요소로 표시 *!*/
+/*    font-size: 16px; !* 폰트 크기 *!*/
+/*    margin-right: 10px; !* 오른쪽 마진 *!*/
+/*    white-space: nowrap; !* 텍스트 줄바꿈 방지 *!*/
+/*}*/
+
+/*!* 카테고리 메뉴 스타일 *!*/
+/*.categories {*/
+/*    display: flex; !* Flexbox 사용 *!*/
+/*    overflow: hidden; !* 넘치는 내용 숨기기 *!*/
+/*}*/
+
+/*.category {*/
+/*    margin-right: 10px; !* 각 카테고리 간격 *!*/
+/*    color: #fff; !* 텍스트 색상 *!*/
+/*    text-decoration: none; !* 밑줄 없음 *!*/
+/*    white-space: nowrap; !* 텍스트 줄바꿈 방지 *!*/
+/*}*/
+
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+}
+
+a {
+    color: #FF6600;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #e65c00;
+}
+
+/* Header Styles */
+nav {
+    background-color: #FF6600; /* 배경색 */
+    color: #fff; /* 텍스트 색상 */
+    padding: 10px 20px; /* 패딩 */
+    display: flex; /* Flexbox 사용 */
+    justify-content: space-between; /* 좌우 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    width: 100%; /* 화면 가로폭에 맞춤 */
+    box-sizing: border-box; /* 패딩 포함하여 크기 계산 */
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    overflow: hidden; /* 넘치는 내용 숨기기 */
+}
+
+/* 로그인/로그아웃 버튼 스타일 */
+.login-btn {
+    border: none; /* 테두리 없음 */
+    color: white; /* 텍스트 색상 */
+    padding: 10px 20px; /* 패딩 */
+    text-align: center; /* 텍스트 가운데 정렬 */
+    text-decoration: none; /* 밑줄 없음 */
+    display: inline-block; /* 인라인 블록 요소로 표시 */
+    font-size: 16px; /* 폰트 크기 */
+    margin-right: 10px; /* 오른쪽 마진 */
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    background-color: #FF6600; /* 배경색 */
+}
+
+.login-btn:hover {
+    background-color: #e65c00;
+}
+
+/* 카테고리 메뉴 스타일 */
+.categories {
+    display: flex; /* Flexbox 사용 */
+    overflow: hidden; /* 넘치는 내용 숨기기 */
+}
+
+.category {
+    margin-right: 10px; /* 각 카테고리 간격 */
+    color: #fff; /* 텍스트 색상 */
+    text-decoration: none; /* 밑줄 없음 */
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+}
+
+.category:hover {
+    color: #e65c00;
+}

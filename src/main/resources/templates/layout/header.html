@@ -1,0 +1,52 @@
+<nav th:fragment="header" xmlns:sec="http://www.w3.org/1999/xhtml">
+    <div class="d-flex justify-content-between align-items-center" style="margin-left: 10%">
+        <!-- 카테고리 목록 -->
+        <a th:each="category : ${T(com.univ.rankingplanet.board.BoardCategory).values()}"
+           th:href="@{'/board/list/' + ${category.displayName}}"
+           class="category" th:text="${category.displayName}"></a>
+    </div>
+    <div>
+        <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="loginModalLabel">로그인</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 로그인 폼 -->
+                        <form th:action="@{/user/login}" method="post">
+                            <div th:if="${param.error}">
+                                <div class="alert alert-danger">
+                                    사용자ID 또는 비밀번호를 확인해 주세요.
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="username" class="form-label" style="color: #ff6601">사용자ID</label>
+                                <input type="text" name="username" id="username" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label" style="color: #ff6601">비밀번호</label>
+                                <input type="password" name="password" id="password" class="form-control">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="background-color: #ff6601">로그인</button>
+                            <a class="btn btn-primary" style="background-color: #ff6601"
+                               th:href="@{/user/signup}">회원가입</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 로그인된 경우에만 보이는 경우 -->
+    <div class="d-flex align-items-center">
+        <!-- 로그인된 경우에만 보이는 경우 -->
+        <a th:text="${member} ? ${'안녕하세요, ' + member + '님'} : 'Guest'"></a>
+        <!-- 로그인 모달 버튼 -->
+        <a type="button" class="btn custom-btn" data-toggle="modal" data-target="#loginModal" sec:authorize="!isAuthenticated()">로그인</a>
+        <a class="login-btn" sec:authorize="isAuthenticated()" th:href="@{/user/logout}">로그아웃</a>
+    </div>
+</nav>

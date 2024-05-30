@@ -1,0 +1,13 @@
+
+<div th:fragment="search-bar">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="" style="margin-left: 10%">
+            <a href="/home.do" id="homeLink" class="text-center" style="color: #FF6600; font-size: 35px">랭킹별</a>
+        </div>
+        <form th:action="@{/board/search}" method="get" class="form-inline ml-auto">
+            <input type="text" name="keyword" placeholder="갤러리 & 통합검색" class="form-control mr-2 custom-input" />
+            <button type="submit" class="btn custom-btn">Search</button>
+        </form>
+    </div>
+</div>
+

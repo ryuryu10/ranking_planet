@@ -1,0 +1,741 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Board Detail</title>-->
+<!--    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">-->
+<!--    <link rel="stylesheet" th:href="@{/css/header.css}">-->
+<!--    <style>-->
+<!--        .selected-vote {-->
+<!--            border: 2px solid red;-->
+<!--        }-->
+<!--        .comment-section {-->
+<!--            margin-top: 20px;-->
+<!--        }-->
+<!--        .comment {-->
+<!--            margin-bottom: 10px;-->
+<!--            padding: 5px;-->
+<!--            border: 1px solid #ccc;-->
+<!--        }-->
+<!--        .custom-btn {-->
+<!--            background-color: #FF6600;-->
+<!--            color: #fff;-->
+<!--            border: none;-->
+<!--        }-->
+<!--        .custom-btn:hover {-->
+<!--            background-color: #e65c00;-->
+<!--            color: #fff;-->
+<!--        }-->
+<!--        .custom-input {-->
+<!--            border: 2px solid #FF6600;-->
+<!--        }-->
+<!--        /* 광고 배너 스타일 */-->
+<!--        .ad-banner {-->
+<!--            background-color: #f2f2f2;-->
+<!--            height: 200px; /* 원하는 높이 지정 */-->
+<!--        }-->
+<!--        /* 게시판 리스트 스타일 */-->
+<!--        .board-list {-->
+<!--            background-color: #e6e6e6;-->
+<!--            height: 400px; /* 원하는 높이 지정 */-->
+<!--            overflow-y: auto; /* 넘치는 내용 스크롤 */-->
+<!--        }-->
+
+<!--        /* 미디어 쿼리: 화면 너비가 992px 이하일 때 */-->
+<!--        @media (max-width: 992px) {-->
+<!--            .ad-banner,-->
+<!--            .board-list {-->
+<!--                height: auto; /* 자동 높이 지정 */-->
+<!--            }-->
+<!--        }-->
+
+<!--        #likeButton {-->
+<!--            background-color: #f0f0f0;-->
+<!--            color: #333;-->
+<!--            border: 1px solid #ccc;-->
+<!--            padding: 8px 16px;-->
+<!--            cursor: pointer;-->
+<!--            transition: background-color 0.3s, color 0.3s;-->
+<!--        }-->
+
+<!--        /* 좋아요 버튼에 마우스를 올렸을 때 스타일 */-->
+<!--        #likeButton:hover {-->
+<!--            background-color: #ddd;-->
+<!--        }-->
+
+<!--        /* 좋아요를 클릭한 상태의 버튼 스타일 */-->
+<!--        #likeButton.liked {-->
+<!--            background-color: #ff6600;-->
+<!--            color: #fff;-->
+<!--            border-color: #ff6600;-->
+<!--            font-weight: bold;-->
+<!--        }-->
+
+<!--        /* 좋아요 버튼의 텍스트 */-->
+<!--        #likeButton::after {-->
+<!--            /*content: "좋아요";*/-->
+<!--        }-->
+
+<!--        /* 좋아요를 클릭한 상태의 버튼 텍스트 */-->
+<!--        #likeButton.liked::after {-->
+<!--            /*content: "좋아요 취소";*/-->
+<!--        }-->
+<!--    </style>-->
+<!--    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div th:replace="~{layout/search-bar :: search-bar}"></div>-->
+<!--&lt;!&ndash; 헤더 포함 &ndash;&gt;-->
+<!--<div th:replace="~{layout/header :: header}"></div>-->
+
+<!--<main class="container mt-4">-->
+<!--    <div class="row">-->
+<!--        <div class="col-md-2 order-md-1 order-3">-->
+<!--            <div class="ad-banner">-->
+<!--                &lt;!&ndash; 여기에 광고 내용을 추가하세요 &ndash;&gt;-->
+<!--                광고 배너-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="col-md-8 order-md-2 order-2">-->
+<!--            <h1 th:text="'제목 : ' + ${board.boardTitle}">Board Title</h1>-->
+<!--            <div th:utext="${board.boardContent}"></div>-->
+<!--            <div th:utext="'작성자 : ' + ${board.userId}"></div>-->
+<!--            <div th:utext="'작성일 : ' + ${board.createdAt}"></div>-->
+<!--            <div th:utext="'마감기한 : ' + ${board.voteEnd}"></div>-->
+<!--            <input type="hidden" id="voteEnd" th:value="${board.voteEnd}"/>-->
+<!--            <div th:utext="'게시판 작성일 : ' + ${board.createdAt}"></div>-->
+<!--            <div th:utext="'게시판 조회수 : ' + ${board.viewCount}"></div>-->
+<!--            <div>-->
+<!--                &lt;!&ndash; 좋아요 버튼 &ndash;&gt;-->
+<!--                <button id="likeButton">좋아요</button>-->
+<!--            </div>-->
+<!--            <div th:if="${board.userId} == ${member}">-->
+<!--                <a th:href="'/board/update/' + ${board.id}">게시글 수정</a>-->
+<!--                <button id="deleteButton">게시글 삭제</button>-->
+<!--            </div>-->
+<!--            <div th:utext="'투표 제목 : '+ ${board.voteTitle}"></div>-->
+<!--            <div>투표 남은 기한</div>-->
+<!--            <div id="remainingTime"></div>-->
+<!--            <form id="voteForm" th:if="${board.voteFlag}">-->
+<!--                <input type="hidden" id="boardId" name="boardId" th:value="${board.id}"/>-->
+<!--                <input type="hidden" name="userId" th:value="${member}"/> &lt;!&ndash; 실제 사용자 ID로 변경 필요 &ndash;&gt;-->
+<!--                <table >-->
+<!--                    <thead>-->
+<!--                    <tr>-->
+<!--                        <th>Vote Number</th>-->
+<!--                        <th>Text</th>-->
+<!--                        <th>Image</th>-->
+<!--                        <th>Vote Count</th>-->
+<!--                        <th>Select</th>-->
+<!--                    </tr>-->
+<!--                    </thead>-->
+<!--                    <tbody>-->
+<!--                    <tr th:each="vote : ${voteList}" th:classappend="${vote.voteNumber} == ${votedNumber} ? 'selected-vote' : ''">-->
+<!--                        <td th:text="${vote.voteNumber}"></td>-->
+<!--                        <td th:text="${vote.text}"></td>-->
+<!--                        <td>-->
+<!--                            <img th:src="${vote.imagePath}" style="width: 100px; height: 100px" alt="Vote Image"/>-->
+<!--                        </td>-->
+<!--                        <td th:text="${vote.voteCount}"></td>-->
+<!--                        <td>-->
+<!--                            <input type="radio" name="voteOption" th:value="${vote.voteNumber}"-->
+<!--                                   th:checked="${vote.voteNumber} == ${votedNumber}"/>-->
+<!--                        </td>-->
+<!--                    </tr>-->
+<!--                    </tbody>-->
+<!--                </table>-->
+<!--                <button id="voteButton" type="submit">Vote</button>-->
+<!--            </form>-->
+<!--                <div class="comment-section">-->
+<!--                    <h2>댓글</h2>-->
+<!--                    <form id="commentForm">-->
+<!--                        <input type="hidden" name="boardId" th:value="${board.id}"/>-->
+<!--                        <input type="hidden" name="commentUserId" th:value="${member}"/> &lt;!&ndash; 실제 사용자 ID로 변경 필요 &ndash;&gt;-->
+<!--                        <textarea name="commentContent" rows="4" cols="50" placeholder="댓글을 입력하세요..."></textarea>-->
+<!--                        <button id="commentSend">댓글 작성</button>-->
+<!--                    </form>-->
+<!--                    <div th:each="comment : ${commentList}" class="comment">-->
+<!--                        <p th:text="${comment.content}"></p>-->
+<!--                        <p>작성자: <span th:text="${comment.userId}"></span></p>-->
+<!--                        <p>작성일시: <span th:text="${comment.createdAt}"></span></p>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--        </div>-->
+<!--        &lt;!&ndash; 우측 광고배너 &ndash;&gt;-->
+<!--        <div class="col-md-2 order-md-3 order-1">-->
+<!--            <div class="ad-banner">-->
+<!--                &lt;!&ndash; 여기에 광고 내용을 추가하세요 &ndash;&gt;-->
+<!--                광고 배너-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</main>-->
+<!--</body>-->
+<!--<script>-->
+<!--    window.onload = function() {-->
+<!--        // 남은 시간 계산 함수 호출-->
+<!--        calculateTimeRemaining();-->
+<!--    };-->
+
+<!--    $(document).ready(function() {-->
+<!--        var boardId = $('input[name="boardId"]').val(); // 게시판의 ID;-->
+
+<!--        // API 호출을 통해 좋아요 여부 및 개수 확인-->
+<!--        $.ajax({-->
+<!--            type: 'GET',-->
+<!--            url: '/like/' + boardId + '/status',-->
+<!--            success: function(response) {-->
+<!--                console.log(response);-->
+<!--                // 좋아요 여부에 따라 버튼 스타일과 텍스트 변경-->
+<!--                if (response.hasLiked) {-->
+<!--                    $('#likeButton').addClass('liked'); // 좋아요 표시 스타일 추가-->
+<!--                    // $('#likeButton').text('좋아요 취소'); // 버튼 텍스트 변경-->
+<!--                } else {-->
+<!--                    $('#likeButton').removeClass('liked'); // 좋아요 표시 스타일 제거-->
+<!--                    // $('#likeButton').text('좋아요'); // 버튼 텍스트 변경-->
+<!--                }-->
+<!--                // 좋아요 개수를 버튼 텍스트에 추가-->
+<!--                $('#likeButton').append('<span class="like-count">' + response.likeCount + '</span>');-->
+<!--            },-->
+<!--            error: function(xhr, status, error) {-->
+<!--                console.error(xhr.responseText); // 오류 처리-->
+<!--            }-->
+<!--        });-->
+<!--    });-->
+
+
+<!--    $('#likeButton').click(function() {-->
+<!--        var boardId = $('input[name="boardId"]').val();/* 게시판의 ID */;-->
+<!--        $.ajax({-->
+<!--            type: 'POST',-->
+<!--            url: '/like/' + boardId,-->
+<!--            success: function(response) {-->
+<!--                // 성공 시 버튼 스타일과 텍스트 변경-->
+<!--                // if ($('#likeButton').hasClass('liked')) {-->
+<!--                //     $('#likeButton').removeClass('liked');-->
+<!--                // } else {-->
+<!--                //     $('#likeButton').addClass('liked');-->
+<!--                //     // $('#likeButton').text('좋아요 취소');-->
+<!--                // }-->
+<!--                location.reload(); // 페이지 새로고침-->
+<!--            },-->
+<!--            error: function(xhr, status, error) {-->
+<!--                alert(xhr.responseText);-->
+<!--                console.error(xhr.responseText); // 오류 처리-->
+<!--            }-->
+<!--        });-->
+<!--    });-->
+
+
+<!--    $('#deleteButton').on('click', function() {-->
+<!--        var boardId = $('input[name="boardId"]').val();-->
+<!--        if(confirm("게시글을 삭제하시겠습니까?")) {-->
+<!--            $.ajax({-->
+<!--                type: 'DELETE',-->
+<!--                url: '/board/delete/' + boardId,-->
+<!--                success: function(response) {-->
+<!--                    alert('게시글이 삭제되었습니다.');-->
+<!--                    window.location.href = '/home.do';-->
+<!--                },-->
+<!--                error: function(xhr, status, error) {-->
+<!--                    console.error(xhr.responseText);-->
+<!--                    alert('게시글 삭제에 실패했습니다.');-->
+<!--                }-->
+<!--            });-->
+<!--        }-->
+<!--    });-->
+
+<!--    function calculateTimeRemaining() {-->
+<!--        // voteEnd의 값 가져오기-->
+<!--        var voteEndValue = document.getElementById("voteEnd").value;-->
+
+<!--        // voteEnd를 Date 객체로 변환-->
+<!--        var voteEndDateTime = new Date(voteEndValue);-->
+
+<!--        // 현재 시간 구하기-->
+<!--        var now = new Date();-->
+
+<!--        // voteEnd와 현재 시간의 차이 계산 (밀리초 단위)-->
+<!--        var timeDiff = voteEndDateTime - now;-->
+
+<!--        var remainingTime = Math.max(timeDiff, 0);-->
+
+<!--        // 차이를 일, 시간, 분으로 변환-->
+<!--        var days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));-->
+<!--        var hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));-->
+<!--        var minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));-->
+
+<!--        // 마감 시간이 지났는지 확인하고 투표 버튼을 비활성화합니다.-->
+<!--        if (remainingTime === 0) {-->
+<!--            var voteButton = document.getElementById("voteButton");-->
+<!--            voteButton.disabled = true;-->
+<!--            var remainingTimeElement = document.getElementById("remainingTime");-->
+<!--            remainingTimeElement.innerHTML = "투표가 마감되었습니다. ";-->
+<!--        }else{-->
+<!--            var remainingTimeElement = document.getElementById("remainingTime");-->
+<!--            remainingTimeElement.innerHTML = "투표 마감까지 남은 시간: " + days + "일 " + hours + "시간 " + minutes + "분";-->
+<!--        }-->
+<!--        // HTML에 남은 시간을 표시합니다.-->
+
+
+<!--        // 결과 출력-->
+<!--        console.log("남은 일수: " + days + "일");-->
+<!--        console.log("남은 시간: " + hours + "시간");-->
+<!--        console.log("남은 분: " + minutes + "분");-->
+<!--    }-->
+
+<!--    $(document).ready(function() {-->
+<!--        $('#voteForm').on('submit', function(event) {-->
+<!--            event.preventDefault(); // 기본 폼 제출 방지-->
+
+<!--            var voteNumber = $('input[name="voteOption"]:checked').val();-->
+<!--            if (!voteNumber) {-->
+<!--                alert('투표 항목을 선택해 주세요.');-->
+<!--                return;-->
+<!--            }-->
+
+<!--            var boardId = $('input[name="boardId"]').val();-->
+<!--            var userId = $('input[name="userId"]').val();-->
+
+<!--            $.ajax({-->
+<!--                type: 'POST',-->
+<!--                url: '/api/vote',-->
+<!--                data: {-->
+<!--                    voteNumber: voteNumber,-->
+<!--                    boardId: boardId,-->
+<!--                    userId: userId-->
+<!--                },-->
+<!--                success: function() {-->
+<!--                    alert("투표 처리가 완료되었습니다.");-->
+<!--                    location.reload(); // 페이지 새로고침-->
+<!--                },-->
+<!--                error: function(xhr, status, error) {-->
+<!--                    alert('투표 처리 중 오류가 발생했습니다.');-->
+<!--                }-->
+<!--            });-->
+<!--        });-->
+
+<!--        document.getElementById("commentSend").addEventListener("click", function(event) {-->
+<!--        // $('#commentForm').on('submit click', function(event) {-->
+<!--            event.preventDefault(); // 기본 폼 제출 방지-->
+
+<!--            var userId = $('input[name="commentUserId"]').val();-->
+<!--            var content = $('textarea[name="commentContent"]').val();-->
+<!--            var boardId = $('input[name="boardId"]').val();-->
+
+<!--            $.ajax({-->
+<!--                type: 'POST',-->
+<!--                url: '/api/comment',-->
+<!--                contentType: 'application/json', // JSON 형식으로 데이터를 전송-->
+<!--                data: JSON.stringify({ // 데이터를 JSON 형식으로 변환하여 전송-->
+<!--                    userId: userId,-->
+<!--                    content: content,-->
+<!--                    boardId: boardId-->
+<!--                }),-->
+<!--                success: function() {-->
+<!--                    alert("댓글이 작성되었습니다.");-->
+<!--                    location.reload(); // 페이지 새로고침-->
+<!--                },-->
+<!--                error: function(xhr, status, error) {-->
+<!--                    alert('댓글 작성 중 오류가 발생했습니다.');-->
+<!--                }-->
+<!--            });-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+<!--&lt;!&ndash;<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>&ndash;&gt;-->
+<!--<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>-->
+<!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Board Detail</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .selected-vote {
+            border: 2px solid red;
+        }
+
+        .comment-section {
+            margin-top: 20px;
+        }
+
+        .comment {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .custom-btn {
+            background-color: #FF6600;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .custom-btn:hover {
+            background-color: #e65c00;
+            color: #fff;
+        }
+
+        .custom-input {
+            border: 2px solid #FF6600;
+            border-radius: 5px;
+        }
+
+        /* 광고 배너 스타일 */
+        .ad-banner {
+            background-color: #f2f2f2;
+            height: 200px; /* 원하는 높이 지정 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #666;
+            font-size: 1.2rem;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        /* 게시판 리스트 스타일 */
+        .board-list {
+            background-color: #e6e6e6;
+            height: 400px; /* 원하는 높이 지정 */
+            overflow-y: auto; /* 넘치는 내용 스크롤 */
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .board-list h1 {
+            color: #FF6600;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .board-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .board-list li {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .board-list li a {
+            color: #FF6600;
+            font-size: 1.2rem;
+        }
+
+        .board-list li a:hover {
+            color: #e65c00;
+        }
+
+        /* 미디어 쿼리: 화면 너비가 992px 이하일 때 */
+        @media (max-width: 992px) {
+            .ad-banner,
+            .board-list {
+                height: auto; /* 자동 높이 지정 */
+            }
+        }
+
+        #likeButton {
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* 좋아요 버튼에 마우스를 올렸을 때 스타일 */
+        #likeButton:hover {
+            background-color: #ddd;
+        }
+
+        /* 좋아요를 클릭한 상태의 버튼 스타일 */
+        #likeButton.liked {
+            background-color: #FF6600;
+            color: #fff;
+            border-color: #FF6600;
+            font-weight: bold;
+        }
+
+        /* 좋아요 버튼의 텍스트 */
+        #likeButton::after {
+            /*content: "좋아요";*/
+        }
+
+        /* 좋아요를 클릭한 상태의 버튼 텍스트 */
+        #likeButton.liked::after {
+            /*content: "좋아요 취소";*/
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<div th:replace="~{layout/search-bar :: search-bar}"></div>
+<!-- 헤더 포함 -->
+<div th:replace="~{layout/header :: header}"></div>
+
+<main class="container mt-4">
+    <div class="row">
+        <div class="col-md-2 order-md-1 order-3">
+            <div class="ad-banner">
+                <!-- 여기에 광고 내용을 추가하세요 -->
+                광고 배너
+            </div>
+        </div>
+
+        <div class="col-md-8 order-md-2 order-2">
+            <h1 th:text="'제목 : ' + ${board.boardTitle}">Board Title</h1>
+            <div th:utext="${board.boardContent}"></div>
+            <div th:utext="'작성자 : ' + ${board.userId}"></div>
+            <div th:utext="'작성일 : ' + ${board.createdAt}"></div>
+            <div th:utext="'마감기한 : ' + ${board.voteEnd}"></div>
+            <input type="hidden" id="voteEnd" th:value="${board.voteEnd}"/>
+            <div th:utext="'게시판 작성일 : ' + ${board.createdAt}"></div>
+            <div th:utext="'게시판 조회수 : ' + ${board.viewCount}"></div>
+            <div>
+                <!-- 좋아요 버튼 -->
+                <button id="likeButton">좋아요</button>
+            </div>
+            <div th:if="${board.userId} == ${member}">
+                <a th:href="'/board/update/' + ${board.id}" class="custom-btn">게시글 수정</a>
+                <button id="deleteButton" class="custom-btn">게시글 삭제</button>
+            </div>
+            <div th:utext="'투표 제목 : '+ ${board.voteTitle}"></div>
+            <div>투표 남은 기한</div>
+            <div id="remainingTime"></div>
+            <form id="voteForm" th:if="${board.voteFlag}">
+                <input type="hidden" id="boardId" name="boardId" th:value="${board.id}"/>
+                <input type="hidden" name="userId" th:value="${member}"/> <!-- 실제 사용자 ID로 변경 필요 -->
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Vote Number</th>
+                        <th>Text</th>
+                        <th>Image</th>
+                        <th>Vote Count</th>
+                        <th>Select</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="vote : ${voteList}" th:classappend="${vote.voteNumber} == ${votedNumber} ? 'selected-vote' : ''">
+                        <td th:text="${vote.voteNumber}"></td>
+                        <td th:text="${vote.text}"></td>
+                        <td>
+                            <img th:src="${vote.imagePath}" style="width: 100px; height: 100px" alt="Vote Image"/>
+                        </td>
+                        <td th:text="${vote.voteCount}"></td>
+                        <td>
+                            <input type="radio" name="voteOption" th:value="${vote.voteNumber}"
+                                   th:checked="${vote.voteNumber} == ${votedNumber}"/>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button id="voteButton" type="submit" class="custom-btn">Vote</button>
+            </form>
+            <div class="comment-section">
+                <h2>댓글</h2>
+                <form id="commentForm">
+                    <input type="hidden" name="boardId" th:value="${board.id}"/>
+                    <input type="hidden" name="commentUserId" th:value="${member}"/> <!-- 실제 사용자 ID로 변경 필요 -->
+                    <textarea name="commentContent" rows="4" cols="50" placeholder="댓글을 입력하세요..." class="form-control custom-input"></textarea>
+                    <button id="commentSend" class="custom-btn mt-2">댓글 작성</button>
+                </form>
+                <div th:each="comment : ${commentList}" class="comment">
+                    <p th:text="${comment.content}"></p>
+                    <p>작성자: <span th:text="${comment.userId}"></span></p>
+                    <p>작성일시: <span th:text="${comment.createdAt}"></span></p>
+                </div>
+            </div>
+        </div>
+        <!-- 우측 광고배너 -->
+        <div class="col-md-2 order-md-3 order-1">
+            <div class="ad-banner">
+                <!-- 여기에 광고 내용을 추가하세요 -->
+                광고 배너
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+<script>
+    window.onload = function() {
+        // 남은 시간 계산 함수 호출
+        calculateTimeRemaining();
+    };
+
+    $(document).ready(function() {
+        var boardId = $('input[name="boardId"]').val(); // 게시판의 ID;
+
+        // API 호출을 통해 좋아요 여부 및 개수 확인
+        $.ajax({
+            type: 'GET',
+            url: '/like/' + boardId + '/status',
+            success: function(response) {
+                console.log(response);
+                // 좋아요 여부에 따라 버튼 스타일과 텍스트 변경
+                if (response.hasLiked) {
+                    $('#likeButton').addClass('liked'); // 좋아요 표시 스타일 추가
+                } else {
+                    $('#likeButton').removeClass('liked'); // 좋아요 표시 스타일 제거
+                }
+                // 좋아요 개수를 버튼 텍스트에 추가
+                $('#likeButton').append('<span class="like-count">' + response.likeCount + '</span>');
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText); // 오류 처리
+            }
+        });
+    });
+
+    $('#likeButton').click(function() {
+        var boardId = $('input[name="boardId"]').val(); /* 게시판의 ID */;
+        $.ajax({
+            type: 'POST',
+            url: '/like/' + boardId,
+            success: function(response) {
+                location.reload(); // 페이지 새로고침
+            },
+            error: function(xhr, status, error) {
+                alert(xhr.responseText);
+                console.error(xhr.responseText); // 오류 처리
+            }
+        });
+    });
+
+    $('#deleteButton').on('click', function() {
+        var boardId = $('input[name="boardId"]').val();
+        if(confirm("게시글을 삭제하시겠습니까?")) {
+            $.ajax({
+                type: 'DELETE',
+                url: '/board/delete/' + boardId,
+                success: function(response) {
+                    alert('게시글이 삭제되었습니다.');
+                    window.location.href = '/home.do';
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert('게시글 삭제에 실패했습니다.');
+                }
+            });
+        }
+    });
+
+    function calculateTimeRemaining() {
+        // voteEnd의 값 가져오기
+        var voteEndValue = document.getElementById("voteEnd").value;
+
+        // voteEnd를 Date 객체로 변환
+        var voteEndDateTime = new Date(voteEndValue);
+
+        // 현재 시간 구하기
+        var now = new Date();
+
+        // voteEnd와 현재 시간의 차이 계산 (밀리초 단위)
+        var timeDiff = voteEndDateTime - now;
+
+        var remainingTime = Math.max(timeDiff, 0);
+
+        // 차이를 일, 시간, 분으로 변환
+        var days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+        // 마감 시간이 지났는지 확인하고 투표 버튼을 비활성화합니다.
+        if (remainingTime === 0) {
+            var voteButton = document.getElementById("voteButton");
+            voteButton.disabled = true;
+            var remainingTimeElement = document.getElementById("remainingTime");
+            remainingTimeElement.innerHTML = "투표가 마감되었습니다.";
+        } else {
+            var remainingTimeElement = document.getElementById("remainingTime");
+            remainingTimeElement.innerHTML = "투표 마감까지 남은 시간: " + days + "일 " + hours + "시간 " + minutes + "분";
+        }
+        // HTML에 남은 시간을 표시합니다.
+
+        // 결과 출력
+        console.log("남은 일수: " + days + "일");
+        console.log("남은 시간: " + hours + "시간");
+        console.log("남은 분: " + minutes + "분");
+    }
+
+    $(document).ready(function() {
+        $('#voteForm').on('submit', function(event) {
+            event.preventDefault(); // 기본 폼 제출 방지
+
+            var voteNumber = $('input[name="voteOption"]:checked').val();
+            if (!voteNumber) {
+                alert('투표 항목을 선택해 주세요.');
+                return;
+            }
+
+            var boardId = $('input[name="boardId"]').val();
+            var userId = $('input[name="userId"]').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/vote',
+                data: {
+                    voteNumber: voteNumber,
+                    boardId: boardId,
+                    userId: userId
+                },
+                success: function() {
+                    alert("투표 처리가 완료되었습니다.");
+                    location.reload(); // 페이지 새로고침
+                },
+                error: function(xhr, status, error) {
+                    alert('투표 처리 중 오류가 발생했습니다.');
+                }
+            });
+        });
+
+        document.getElementById("commentSend").addEventListener("click", function(event) {
+            event.preventDefault(); // 기본 폼 제출 방지
+
+            var userId = $('input[name="commentUserId"]').val();
+            var content = $('textarea[name="commentContent"]').val();
+            var boardId = $('input[name="boardId"]').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/comment',
+                contentType: 'application/json', // JSON 형식으로 데이터를 전송
+                data: JSON.stringify({ // 데이터를 JSON 형식으로 변환하여 전송
+                    userId: userId,
+                    content: content,
+                    boardId: boardId
+                }),
+                success: function() {
+                    alert("댓글이 작성되었습니다.");
+                    location.reload(); // 페이지 새로고침
+                },
+                error: function(xhr, status, error) {
+                    alert('댓글 작성 중 오류가 발생했습니다.');
+                }
+            });
+        });
+    });
+</script>
+<!--<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>-->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</html>
