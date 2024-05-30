@@ -53,8 +53,10 @@ public class MainController {
             model.addAttribute("member", userDetails.getUsername());
             model.addAttribute("sessionTimeoutInSeconds", sessionTimeoutInSeconds);
         }
+        System.out.println("cre: " + criteria);
         List<Board> boardList = boardService.getBoardListOrderByCriteria(criteria);
         for(Board board : boardList){
+            System.out.println(board.getBoardTitle());
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             String formattedDate = board.getCreatedAt().format(formatter);
             model.addAttribute("formattedCreatedAt", formattedDate);

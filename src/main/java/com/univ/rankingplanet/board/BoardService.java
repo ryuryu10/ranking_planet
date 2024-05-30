@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,8 +49,21 @@ public class BoardService {
         return this.boardRepository.findAll();
     }
 
+    // 메인함수용
     public List<Board> getBoardListOrderByCriteria(String criteria) {
+        if(criteria == "all"){
+//            id값 기준 하강할수록 작아진다 = 최신꺼부터
+            return this.boardRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        }
         return this.boardRepository.findAllOrderByCriteria(criteria);
+    }
+
+    // 카테고리 페이지용
+    public List<Board> getBoardsByCategoryAndOrderByCriteria(String criteria, String category) {
+        if(criteria == "all"){
+            return boardRepository.findAllByCategory(category);
+        }
+        return boardRepository.findBoardsByCategoryAndOrderByCriteria(criteria, category);
     }
 
     public void incrementViewCount(Long id) {
@@ -112,12 +126,5 @@ public class BoardService {
     @Transactional
     public void deleteBoard(Long id) {
         boardRepository.deleteById(id);
-    }
-
-    public List<Board> getBoardsByCategoryAndOrderByCriteria(String criteria, String category) {
-        if(criteria == "all"){
-            return boardRepository.findAllByCategory(category);
-        }
-        return boardRepository.findBoardsByCategoryAndOrderByCriteria(criteria, category);
     }
 }

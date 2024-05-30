@@ -35,12 +35,19 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("SELECT b FROM Board b WHERE b.category = :category " +
             "ORDER BY CASE " +
             "WHEN :criteria = 'likeCount' THEN b.likeCount " +
-            "WHEN :criteria = 'viewCount' THEN b.viewCount END")
+            "WHEN :criteria = 'viewCount' THEN b.viewCount END DESC")
     List<Board> findBoardsByCategoryAndOrderByCriteria(@Param("criteria") String criteria, @Param("category") String category);
 
     @Query("SELECT b FROM Board b " +
             "ORDER BY CASE " +
             "WHEN :criteria = 'likeCount' THEN b.likeCount " +
-            "WHEN :criteria = 'viewCount' THEN b.viewCount END")
+            "WHEN :criteria = 'viewCount' THEN b.viewCount END DESC")
     List<Board> findAllOrderByCriteria(String criteria);
+
+    List<Board> findBoardsByCategory(String category);
+
+    @Query("SELECT b FROM Board b " +
+            "ORDER BY b.id DESC")
+    List<Board> findBoardsOrderById();
+
 }

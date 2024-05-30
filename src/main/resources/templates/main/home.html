@@ -100,7 +100,7 @@
             <div class="board-list">
                 <h1>Board List</h1>
                 <input type="hidden" id="category" th:value="${category}"/>
-                <a th:href="@{/home.do (criteria='all')}">생성일 기준 정렬</a>
+<!--                <a th:href="@{/home.do (criteria='all')}">최신 기준</a>-->
                 <!-- voteCount 기준으로 요청을 보내는 링크 -->
                 <a th:href="@{/home.do (criteria='likeCount')}">좋아요 기준 정렬</a>
 
