@@ -518,14 +518,9 @@
                 <a th:href="'/board/update/' + ${board.id}" class="custom-btn">게시글 수정</a>
                 <button id="deleteButton" class="custom-btn">게시글 삭제</button>
             </div>
-            <div th:if="${board.voteFlag}">
-                <div th:utext="'투표 제목 : '+ ${board.voteTitle}"></div>
-                <div th:switch="${board.voteProgress}">
-                    <span th:case="1">투표 진행 상태 : 진행중</span>
-                    <span th:case="2">투표 진행 상태 : 종료</span>
-                </div>
-            </div>
-            <div id="remainingTime"></div>
+            <div th:utext="'투표 제목 : '+ ${board.voteTitle}"></div>
+            <div th:utext="'투표 결과 1등 : '+ ${votesWithMaxCount[0].voteNumber} + '번 ' + ${votesWithMaxCount[0].text}"></div>
+<!--            <div id="remainingTime"></div>-->
             <form id="voteForm" th:if="${board.voteFlag}">
                 <input type="hidden" id="boardId" name="boardId" th:value="${board.id}"/>
                 <input type="hidden" name="userId" th:value="${member}"/> <!-- 실제 사용자 ID로 변경 필요 -->
@@ -536,7 +531,6 @@
                         <th>Text</th>
                         <th>Image</th>
                         <th>Vote Count</th>
-                        <th>Select</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -547,14 +541,9 @@
                             <img th:src="${vote.imagePath}" style="width: 100px; height: 100px" alt="Vote Image"/>
                         </td>
                         <td th:text="${vote.voteCount}"></td>
-                        <td>
-                            <input type="radio" name="voteOption" th:value="${vote.voteNumber}"
-                                   th:checked="${vote.voteNumber} == ${votedNumber}"/>
-                        </td>
                     </tr>
                     </tbody>
                 </table>
-                <button id="voteButton" type="submit" class="custom-btn">Vote</button>
             </form>
             <div class="comment-section">
                 <h2>댓글</h2>

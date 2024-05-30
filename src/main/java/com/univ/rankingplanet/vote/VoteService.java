@@ -42,7 +42,6 @@ public class VoteService {
             } else {
                 // 이미 투표한 경우 처리할 로직 추가
             }
-//        }
     }
 
 
@@ -62,5 +61,9 @@ public class VoteService {
         vote.setImagePath(imagePath);
         vote.setImageName(imageName);
         voteRepository.save(vote);
+    }
+
+    public List<Vote> getVotesWithMaxCountByBoardId(Long boardId) {
+        return voteRepository.findVotesWithMaxCountByBoardId(boardId);
     }
 }

@@ -24,6 +24,11 @@ public class BoardService {
         board.setBoardTitle(boardTitle);
         board.setBoardContent(boardContent);
         board.setVoteFlag(voteFlag);
+        if(voteFlag == true){ // 게시판 생성시 투표도 생성했을 경우
+            board.setVoteProgress(1); // 1 == 투표 진행 중
+        }else {
+            board.setVoteProgress(0); // 0 == 투표 없음
+        }
         board.setCategory(category);
         board.setCreatedAt(LocalDateTime.now());
         board.setUserId(userId);
@@ -92,6 +97,14 @@ public class BoardService {
         board.setVoteTitle(voteTitle);
 
         // 게시글 업데이트
+        boardRepository.save(board);
+        return board;
+    }
+
+    public Board updateBoardVoteProgress(Long boardId){
+        Optional<Board> optBoard = boardRepository.findById(boardId);
+        Board board = optBoard.get();
+        board.setVoteProgress(2);
         boardRepository.save(board);
         return board;
     }

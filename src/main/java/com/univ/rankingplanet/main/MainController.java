@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.format.DateTimeFormatter;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +53,14 @@ public class MainController {
             model.addAttribute("sessionTimeoutInSeconds", sessionTimeoutInSeconds);
         }
         List<Board> boardList = boardService.getBoardList();
+        for(Board board : boardList){
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String formattedDate = board.getCreatedAt().format(formatter);
+            model.addAttribute("formattedCreatedAt", formattedDate);
+        }
         model.addAttribute("boardList", boardList);
+
+
 
         return "main/home";
     }

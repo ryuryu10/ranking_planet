@@ -100,6 +100,11 @@ public class BoardController {
         List<Comment> commentList = commentRepository.findAllByBoardId(board.getId());
         model.addAttribute("commentList", commentList);
 
+        if(board.getVoteProgress() == 2){ // 투표가 끝난 경우의 페이지 리턴
+            List<Vote> votesWithMaxCount = voteService.getVotesWithMaxCountByBoardId(id);
+            model.addAttribute("votesWithMaxCount", votesWithMaxCount);
+            return "board/board_vote_end";
+        }
         return "board/board_detail";
     }
 
@@ -299,6 +304,11 @@ public class BoardController {
             e.printStackTrace();
             return "파일 삭제 중 오류가 발생했습니다.";
         }
+    }
+
+    @PostMapping("/board/voteProgress/update/{boardId}")
+    public void updateVoteProgress(@PathVariable Long boardId){
+
     }
 
     @DeleteMapping("/board/delete/{id}")

@@ -71,13 +71,13 @@
             color: #e65c00;
         }
 
-        /* 미디어 쿼리: 화면 너비가 992px 이하일 때 */
-        @media (max-width: 992px) {
-            .ad-banner,
-            .board-list {
-                height: auto; /* 자동 높이 지정 */
-            }
-        }
+        /*!* 미디어 쿼리: 화면 너비가 992px 이하일 때 *!*/
+        /*@media (max-width: 992px) {*/
+        /*    .ad-banner,*/
+        /*    .board-list {*/
+        /*        height: auto; !* 자동 높이 지정 *!*/
+        /*    }*/
+        /*}*/
     </style>
 </head>
 <body>
@@ -104,6 +104,8 @@
                         <li th:each="board : ${boardList}">
                             <span th:text="${board.category}"></span>
                             <a th:href="@{/board/detail/{id}(id=${board.id})}" th:text="${board.boardTitle}">Board Title</a>
+                            <span th:text="'[ ' + ${board.viewCount} + ' ]'" alt="조회수" style="color: red"></span>
+<!--                            조회수?-->
                         </li>
                     </ul>
                 </th:block>

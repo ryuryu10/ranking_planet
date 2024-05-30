@@ -1,10 +1,13 @@
 package com.univ.rankingplanet.board;
 
 public enum BoardCategory {
-    NOTICE("공지사항"),
-    FREE("자유게시판"),
-    QNA("질문과답변"),
-    REVIEW("리뷰게시판");
+    ED("전자제품"),
+    IDOL("자동차"),
+    SPORTS("컴퓨터"),
+    MOVIE("여행"),
+    TRIP("아이돌"),
+    POLITICS("정치");
+
 
     private final String displayName;
 

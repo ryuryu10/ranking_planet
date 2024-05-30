@@ -39,6 +39,10 @@ public class Board {
 
     @Column(name = "vote_flag")
     private boolean voteFlag;
+
+    @Column(name = "vote_progress") // 투표없음 -> 0, 투표진행 -> 1, 투표종료 -> 2
+    private int voteProgress;
+
     @Column(name = "view_count", nullable = false, columnDefinition = "int default 0")
     private int viewCount = 0;
 
@@ -47,6 +51,14 @@ public class Board {
     @Column(name = "like_count", nullable = false, columnDefinition = "int default 0")
     private int likeCount = 0;
 
+
+    public int getVoteProgress() {
+        return voteProgress;
+    }
+
+    public void setVoteProgress(int voteProgress) {
+        this.voteProgress = voteProgress;
+    }
 
     public String getVoteTitle() {
         return voteTitle;
