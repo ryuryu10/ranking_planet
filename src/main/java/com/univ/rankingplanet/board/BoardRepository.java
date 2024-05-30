@@ -1,12 +1,12 @@
 package com.univ.rankingplanet.board;
 
-import com.univ.rankingplanet.login.SiteUser;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,4 +31,16 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("SELECT b.likeCount FROM Board b WHERE b.id = :boardId")
     int findLikeCountById(Long boardId);
+
+    @Query("SELECT b FROM Board b WHERE b.category = :category " +
+            "ORDER BY CASE " +
+            "WHEN :criteria = 'likeCount' THEN b.likeCount " +
+            "WHEN :criteria = 'viewCount' THEN b.viewCount END")
+    List<Board> findBoardsByCategoryAndOrderByCriteria(@Param("criteria") String criteria, @Param("category") String category);
+
+    @Query("SELECT b FROM Board b " +
+            "ORDER BY CASE " +
+            "WHEN :criteria = 'likeCount' THEN b.likeCount " +
+            "WHEN :criteria = 'viewCount' THEN b.viewCount END")
+    List<Board> findAllOrderByCriteria(String criteria);
 }

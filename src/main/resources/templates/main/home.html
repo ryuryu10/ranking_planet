@@ -99,17 +99,27 @@
         <div class="col-md-8 order-md-2 order-2">
             <div class="board-list">
                 <h1>Board List</h1>
+                <input type="hidden" id="category" th:value="${category}"/>
+                <a th:href="@{/home.do (criteria='all')}">생성일 기준 정렬</a>
+                <!-- voteCount 기준으로 요청을 보내는 링크 -->
+                <a th:href="@{/home.do (criteria='likeCount')}">좋아요 기준 정렬</a>
+
+                <!-- likeCount 기준으로 요청을 보내는 링크 -->
+                <a th:href="@{/home.do (criteria='viewCount')}">조회수 기준 정렬</a>
                 <th:block th:if="${not #lists.isEmpty(boardList)}">
                     <ul>
                         <li th:each="board : ${boardList}">
                             <span th:text="${board.category}"></span>
                             <a th:href="@{/board/detail/{id}(id=${board.id})}" th:text="${board.boardTitle}">Board Title</a>
-                            <span th:text="'[ ' + ${board.viewCount} + ' ]'" alt="조회수" style="color: red"></span>
-<!--                            조회수?-->
+                            <span th:text="'[ 조회수: ' + ${board.viewCount} + ' ]'" alt="조회수" style="color: red"></span>
+                            <span th:switch="${board.voteProgress}">
+                                <span th:case="1">투표 진행중</span>
+                                <span th:case="2">투표 종료</span>
+                            </span>
                         </li>
                     </ul>
                 </th:block>
-                <a th:href="@{/board/create}" class="category">게시글 작성</a>
+                <a th:href="@{/board/create}" class="category" style="color:black">게시글 작성</a>
             </div>
         </div>
         <!-- 우측 광고배너 -->

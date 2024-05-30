@@ -26,7 +26,6 @@ public class VoteService {
     public void vote(int voteNumber, Long boardId, String userId) {
         Vote vote = voteRepository.findByBoardIdAndVoteNumber(boardId, voteNumber);
         boolean hasVoted = voteRecordRepository.existsByBoardIdAndVoteNumberAndUserId(boardId, voteNumber, userId);
-        System.out.println(hasVoted);
             if (!hasVoted) {
                 // 투표 기록 생성 및 저장
                 VoteRecord voteRecord = new VoteRecord();

@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" th:href="@{/css/header.css}">
-<style>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+</head>
+  <style>
   .custom-btn {
     background-color: #FF6600;
     color: #fff;
@@ -61,6 +64,15 @@
     <div class="col-md-8 order-md-2 order-2">
       <div class="board-list">
         <h1>Board List</h1>
+        <input type="hidden" id="category" th:value="${category}"/>
+        <a th:href="@{/board/list/{category}(category=${category},criteria='all')}">생성일 기준 정렬</a>
+        <!-- voteCount 기준으로 요청을 보내는 링크 -->
+        <a th:href="@{/board/list/{category}(category=${category},criteria='likeCount')}">좋아요 기준 정렬</a>
+
+        <!-- likeCount 기준으로 요청을 보내는 링크 -->
+        <a th:href="@{/board/list/{category}(category=${category},criteria='viewCount')}">조회수 기준 정렬</a>
+
+        <a></a>
         <th:block th:if="${not #lists.isEmpty(boardList)}">
           <ul>
             <li th:each="board : ${boardList}">
@@ -82,8 +94,6 @@
     </div>
   </div>
 </main>
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>

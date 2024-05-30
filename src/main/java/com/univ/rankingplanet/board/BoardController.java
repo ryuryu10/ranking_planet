@@ -158,9 +158,15 @@ public class BoardController {
     }
 
     @GetMapping(value = "/board/list/{category}")
-    public String boardList(@PathVariable String category, Model model){
-        List<Board> boardList = boardService.getBoardListByCategory(category);
-        model.addAttribute("boardList",boardList);
+    public String boardList(@PathVariable String category, @RequestParam(name="criteria",defaultValue="all") String criteria, Model model){
+//        List<Board> boardList = boardService.getBoardListByCategory(category);
+        System.out.println("1" + category);
+        System.out.println("2" + criteria);
+        List<Board> boardList = null;
+        boardList = boardService.getBoardsByCategoryAndOrderByCriteria(criteria, category);
+        model.addAttribute("category", category);
+        model.addAttribute("criteria", criteria);
+        model.addAttribute("boardList", boardList);
         return "board/category_board_list";
     }
 
@@ -246,9 +252,6 @@ public class BoardController {
             @RequestParam("boardId") Long boardId,
             @RequestParam("texts") List<String> texts,
             @RequestParam("images") List<MultipartFile> uploadFile) {
-        System.out.println("Board ID: " + boardId);
-        System.out.println("Texts: " + texts);
-        System.out.println("Images size: " + uploadFile.size());
 
         // 이미지 및 텍스트 처리 로직 구현
         for (int i = 0; i < texts.size(); i++) {
@@ -320,7 +323,6 @@ public class BoardController {
     @ResponseBody
     @PostMapping(value = "/uploadTest")
     public ResponseEntity<Map<String, Object>> uploadTestPOST(MultipartFile[] uploadFile) {
-        System.out.println("들어오긴 하냐?");
 
         // 내가 업로드 파일을 저장할 경로
         String uploadFolder = "/Users/pms327/Downloads/image";

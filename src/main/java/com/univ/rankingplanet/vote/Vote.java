@@ -1,11 +1,14 @@
 package com.univ.rankingplanet.vote;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name="vote")
 public class Vote {
 
     @Id
@@ -17,6 +20,7 @@ public class Vote {
 
     private String text; // 항목 내용
 
+    @Column(columnDefinition = "TEXT")
     private String imagePath; // 이미지 경로
 
     private String imageName; // 이미지 이름

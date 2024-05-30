@@ -48,8 +48,8 @@ public class BoardService {
         return this.boardRepository.findAll();
     }
 
-    public List<Board> getBoardListByCategory(String category) {
-        return this.boardRepository.findAllByCategory(category);
+    public List<Board> getBoardListOrderByCriteria(String criteria) {
+        return this.boardRepository.findAllOrderByCriteria(criteria);
     }
 
     public void incrementViewCount(Long id) {
@@ -112,5 +112,12 @@ public class BoardService {
     @Transactional
     public void deleteBoard(Long id) {
         boardRepository.deleteById(id);
+    }
+
+    public List<Board> getBoardsByCategoryAndOrderByCriteria(String criteria, String category) {
+        if(criteria == "all"){
+            return boardRepository.findAllByCategory(category);
+        }
+        return boardRepository.findBoardsByCategoryAndOrderByCriteria(criteria, category);
     }
 }

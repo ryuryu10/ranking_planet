@@ -7,6 +7,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -48,8 +50,17 @@ public class Board {
 
     private String voteTitle;
 
+//    게시판 좋아요 개수
     @Column(name = "like_count", nullable = false, columnDefinition = "int default 0")
     private int likeCount = 0;
+    // 엔티티가 로드되거나 업데이트되기 전에 호출되는 메소드
+    @PostLoad
+    @PreUpdate
+    private void checkVoteProgress() {
+        if (voteEnd != null && LocalDateTime.now().isAfter(voteEnd)) {
+            voteProgress = 2; // 투표 종료
+        }
+    }
 
 
     public int getVoteProgress() {
